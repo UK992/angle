@@ -15,6 +15,11 @@ install:
   - rust-nightly-%ARCH%-pc-windows-%ABI%.exe /VERYSILENT /NORESTART /DIR="C:\rust"
   #  PATH: '%PATH%;C:\Program Files (x86)\Rust\bin;C:\MinGW\bin'
   - IF "%ABI%"=="gnu" set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;%PATH%
+    - IF "%ABI%"=="gnu" set MSYSTEM=MSYS
+  - IF "%ABI%"=="gnu" set MSYS=winsymlinks=lnk
+  - IF "%ABI%"=="gnu" bash -lc "pacman --needed --noconfirm -Sy pacman-mirrors"
+  - IF "%ABI%"=="gnu" bash -lc "pacman --noconfirm -Sy"
+  - IF "%ABI%"=="gnu" bash -lc "pacman -Sy --needed --noconfirm mingw-w64-x86_64-cmake"
   - IF "%ABI%"=="msvc" IF "%ARCH%" == "i686" CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
   - IF "%ABI%"=="msvc" IF "%ARCH%" == "x86_64" CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
   - rustc -V
