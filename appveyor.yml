@@ -1,14 +1,26 @@
 environment:
-  PATH: '%PATH%;C:\Program Files (x86)\Rust\bin;C:\MinGW\bin'
+  PATH: 'C:\rust\bin;%PATH%'
   matrix:
-    - TARGET: x86_64-pc-windows-msvc
-    - TARGET: i686-pc-windows-msvc
-    - TARGET: i686-pc-windows-gnu
+  - ARCH: x86_64
+    ABI: gnu
+  - ARCH: i686
+    ABI: gnu
+  - ARCH: x86_64
+    ABI: msvc
+  - ARCH: i686
+    ABI: msvc
+
 install:
-  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-nightly-${env:TARGET}.exe"
-  - rust-nightly-%TARGET%.exe /VERYSILENT /NORESTART /DIR="C:\Program Files (x86)\Rust"
+  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-nightly-${env:ARCH}-pc-windows-${env:ABI}.exe"
+  - rust-nightly-%ARCH%-pc-windows-%ABI%.exe /VERYSILENT /NORESTART /DIR="C:\rust"
+  #  PATH: '%PATH%;C:\Program Files (x86)\Rust\bin;C:\MinGW\bin'
+  - IF "%ABI%"=="gnu" set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;%PATH%
+  - IF "%ABI%"=="msvc" IF "%ARCH%" == "i686" CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+  - IF "%ABI%"=="msvc" IF "%ARCH%" == "x86_64" CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
   - rustc -V
   - cargo -V
-build: false
+
+build: off
+
 test_script:
   - cargo test --verbose
